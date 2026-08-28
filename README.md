@@ -1,10 +1,10 @@
 # ReleaseSeal
 
-**Create and verify deterministic SHA-256 release manifests from one CLI.**
+**Focused deterministic release-manifest research.**
 
-> **Status:** development preview. No stable release has been published.
+> **Companion research status:** ReleaseSeal's useful deterministic SHA-256 manifest creation and verification direction has been integrated into [HashCheck](https://github.com/BLCCoreStudio/HashCheck). This repository remains public as a focused implementation history/reference rather than being deleted or republished.
 
-ReleaseSeal is intended to make small-project release hygiene easier to reproduce without pretending that checksums alone provide signing, provenance, or complete supply-chain security.
+ReleaseSeal explored a narrow workflow for creating and verifying SHA-256 manifests for groups of release artifacts.
 
 ## Current preview
 
@@ -22,17 +22,30 @@ releaseseal verify dist/SHA256SUMS
 
 The current implementation:
 
-- computes SHA-256 internally with no runtime checksum utility dependency
+- computes SHA-256 locally
 - streams files instead of loading entire release artifacts into memory
 - writes manifest entries in deterministic path order
 - writes the manifest through a temporary file and rename
 - verifies each listed file and reports `OK`, `MISMATCH`, or `ERROR`
 
-A successful verification exits `0`; checksum/file failures exit `1`; invalid input or manifest errors exit `2`.
+## Primary integration target
+
+New checksum-manifest development now targets **HashCheck**, which already provides released SHA-256/SHA-512 single-file calculation and verification. The integrated development line adds:
+
+```bash
+hashcheck manifest create <MANIFEST> <FILE>...
+hashcheck manifest verify <MANIFEST>
+```
+
+The HashCheck integration also constrains manifest entries to relative paths inside the manifest directory and rejects absolute/parent-traversal entries during verification.
+
+ReleaseSeal remains useful for understanding the original focused experiment and preserving its commit history and existing links.
 
 ## Scope
 
-SBOM generation, provenance attestations, and cryptographic signing are **not implemented yet**. ReleaseSeal will not make signing or attestation claims until those capabilities actually exist and are testable.
+Checksums and checksum manifests provide byte-integrity verification; they do not by themselves provide artifact authenticity.
+
+SBOM generation, provenance attestations, and cryptographic signing are **not implemented here** and are not implied by the HashCheck integration.
 
 ## Build
 
