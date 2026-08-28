@@ -1,29 +1,46 @@
 # ReleaseSeal
 
-**Generate checksums, SBOM metadata, and release verification artifacts from one CLI.**
+**Create and verify deterministic SHA-256 release manifests from one CLI.**
 
-> **Status:** early development. No stable release has been published.
+> **Status:** development preview. No stable release has been published.
 
-ReleaseSeal is intended to make small-project release hygiene easier to reproduce from a single local command.
+ReleaseSeal is intended to make small-project release hygiene easier to reproduce without pretending that checksums alone provide signing, provenance, or complete supply-chain security.
 
-## Planned v0.1
+## Current preview
 
-- SHA-256 checksum generation
-- deterministic manifest describing release files
-- optional SBOM generation through a documented format/toolchain
-- explicit tool/version provenance in generated metadata
-- verification command for an existing release manifest
-- no signing claims unless cryptographic signing is actually configured
+Create a checksum manifest:
 
-The current repository is a development scaffold. Checksum, SBOM, provenance, and signing functionality are **not implemented yet**.
+```bash
+releaseseal create dist/SHA256SUMS dist/app.tar.gz dist/app.tar.gz.asc
+```
+
+Verify it later:
+
+```bash
+releaseseal verify dist/SHA256SUMS
+```
+
+The current implementation:
+
+- computes SHA-256 internally with no runtime checksum utility dependency
+- streams files instead of loading entire release artifacts into memory
+- writes manifest entries in deterministic path order
+- writes the manifest through a temporary file and rename
+- verifies each listed file and reports `OK`, `MISMATCH`, or `ERROR`
+
+A successful verification exits `0`; checksum/file failures exit `1`; invalid input or manifest errors exit `2`.
+
+## Scope
+
+SBOM generation, provenance attestations, and cryptographic signing are **not implemented yet**. ReleaseSeal will not make signing or attestation claims until those capabilities actually exist and are testable.
 
 ## Build
 
 Requires Rust 1.74 or newer.
 
 ```bash
-cargo build
-cargo test
+cargo build --locked
+cargo test --locked
 ```
 
 ## Security
