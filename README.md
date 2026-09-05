@@ -1,64 +1,30 @@
 # ReleaseSeal
 
-**Focused deterministic release-manifest research.**
+> **Project status: sunset / discontinued.**
 
-> **Companion research status:** ReleaseSeal's useful deterministic SHA-256 manifest creation and verification direction has been integrated into [HashCheck](https://github.com/BLCCoreStudio/HashCheck). This repository remains public as a focused implementation history/reference rather than being deleted or republished.
+ReleaseSeal was a focused deterministic release-manifest experiment. Its useful SHA-256 manifest creation and verification direction has been integrated into [HashCheck](https://github.com/BLCCoreStudio/HashCheck), which is the maintained implementation line.
 
-ReleaseSeal explored a narrow workflow for creating and verifying SHA-256 manifests for groups of release artifacts.
+The repository remains public for historical reference and to preserve existing links and commit history, but **no further feature development or routine maintenance is planned**.
 
-## Current preview
+## Historical scope
 
-Create a checksum manifest:
+ReleaseSeal explored a narrow local workflow for:
 
-```bash
-releaseseal create dist/SHA256SUMS dist/app.tar.gz dist/app.tar.gz.asc
-```
+- creating deterministic SHA-256 manifests for release artifacts;
+- streaming files instead of loading complete artifacts into memory;
+- ordering manifest entries deterministically;
+- writing manifests through a temporary file and rename;
+- verifying listed artifacts and reporting integrity failures explicitly.
 
-Verify it later:
+Checksums provide byte-integrity verification; they do not by themselves establish artifact authenticity. Signing, provenance attestations, and SBOM generation were outside this project's scope.
 
-```bash
-releaseseal verify dist/SHA256SUMS
-```
+## Maintained alternative
 
-The current implementation:
+For checksum calculation, verification, and manifest workflows, use [HashCheck](https://github.com/BLCCoreStudio/HashCheck).
 
-- computes SHA-256 locally
-- streams files instead of loading entire release artifacts into memory
-- writes manifest entries in deterministic path order
-- writes the manifest through a temporary file and rename
-- verifies each listed file and reports `OK`, `MISMATCH`, or `ERROR`
+## Historical source
 
-## Primary integration target
-
-New checksum-manifest development now targets **HashCheck**, which already provides released SHA-256/SHA-512 single-file calculation and verification. The integrated development line adds:
-
-```bash
-hashcheck manifest create <MANIFEST> <FILE>...
-hashcheck manifest verify <MANIFEST>
-```
-
-The HashCheck integration also constrains manifest entries to relative paths inside the manifest directory and rejects absolute/parent-traversal entries during verification.
-
-ReleaseSeal remains useful for understanding the original focused experiment and preserving its commit history and existing links.
-
-## Scope
-
-Checksums and checksum manifests provide byte-integrity verification; they do not by themselves provide artifact authenticity.
-
-SBOM generation, provenance attestations, and cryptographic signing are **not implemented here** and are not implied by the HashCheck integration.
-
-## Build
-
-Requires Rust 1.74 or newer.
-
-```bash
-cargo build --locked
-cargo test --locked
-```
-
-## Security
-
-See [SECURITY.md](SECURITY.md).
+Previous implementation details, tests, documentation, and development history remain available through the Git history.
 
 ## License
 
